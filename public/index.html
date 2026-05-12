@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asistente de Ventas | Claro Migraciones | CXD</title>
+<link rel="icon" href="cxd.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--r:#E7050A;--rk:#b80408;--g:#1b5e20;--y:#f9a825;--bg:#fafafa;--card:#fff;--t1:#111;--t2:#555;--t3:#888;--bdr:#e8e8e8;--shadow:0 2px 12px rgba(0,0,0,.06);--cxd-blue:#2196F3;--cxd-pink:#E91E90;--cxd-cyan:#00BCD4}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6}
+
+.app{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+@media(max-width:900px){.app{grid-template-columns:1fr}.nav{display:none}.nav.open{display:block;position:fixed;z-index:100;inset:0;background:var(--card);overflow-y:auto}.burger{display:flex!important}}
+
+.nav{background:#fff;border-right:1px solid var(--bdr);padding:0;overflow-y:auto;position:sticky;top:0;height:100vh}
+.nav-header{padding:20px;border-bottom:1px solid var(--bdr);text-align:center}
+.nav-header img{height:48px;margin-bottom:8px}
+.nav-header h2{font-size:13px;font-weight:700;color:var(--t1);letter-spacing:.3px}
+.nav-header span{font-size:10px;color:var(--t3);display:block;margin-top:2px}
+.nav-cat{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px;padding:20px 20px 8px}
+.nav a{display:flex;align-items:center;gap:10px;padding:11px 20px;color:var(--t2);text-decoration:none;font-size:13px;font-weight:500;border-left:3px solid transparent;transition:.15s}
+.nav a:hover{background:rgba(231,5,10,.04);color:var(--r)}
+.nav a.on{background:rgba(231,5,10,.06);color:var(--r);border-left-color:var(--r);font-weight:600}
+.nav a .icon{font-size:15px;width:20px;text-align:center}
+.nav a .step-num{background:var(--bdr);color:var(--t3);font-size:10px;font-weight:700;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav a.on .step-num{background:var(--r);color:#fff}
+.nav a.done .step-num{background:var(--g);color:#fff}
+.burger{display:none;position:fixed;top:12px;left:12px;z-index:200;width:40px;height:40px;background:var(--r);color:#fff;border:none;border-radius:8px;font-size:18px;cursor:pointer;align-items:center;justify-content:center}
+
+.main{padding:0;max-width:960px;display:flex;flex-direction:column;min-height:100vh}
+
+.main-header{background:linear-gradient(135deg,var(--r) 0%,var(--rk) 100%);color:#fff;padding:20px 40px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.main-header img{height:36px;border-radius:6px;background:#fff;padding:4px}
+.main-header-text h1{font-size:16px;font-weight:700;margin:0}
+.main-header-text span{font-size:11px;opacity:.85}
+@media(max-width:900px){.main-header{padding:14px 16px 14px 60px}.main-header img{height:30px}}
+
+.main-body{flex:1;padding:32px 40px 120px}
+@media(max-width:900px){.main-body{padding:24px 16px 120px}}
+
+.sec{display:none}
+.sec.on{display:block;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.nav-footer{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--bdr);padding:12px 20px;z-index:90;box-shadow:0 -4px 20px rgba(0,0,0,.08)}
+.nav-footer.show{display:flex;gap:12px;justify-content:space-between;align-items:center}
+.nav-footer .pager{display:flex;gap:8px}
+.nav-footer button{padding:10px 20px;border:1.5px solid var(--bdr);background:#fff;color:var(--t1);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit;display:flex;align-items:center;gap:6px}
+.nav-footer button:hover{border-color:var(--r);color:var(--r)}
+.nav-footer button.primary{background:var(--r);color:#fff;border-color:var(--r)}
+.nav-footer button.primary:hover{background:var(--rk)}
+.nav-footer button:disabled{opacity:.3;cursor:not-allowed}
+.nav-footer .step-indicator{font-size:12px;color:var(--t3);font-weight:600}
+.nav-footer .kbd{font-size:10px;color:var(--t3);background:#f0f0f0;padding:2px 6px;border-radius:3px;margin-left:4px}
+
+.sec-title{font-size:26px;font-weight:700;color:var(--t1);margin-bottom:6px}
+.subtitle{font-size:14px;color:var(--t3);margin-bottom:24px}
+h3{font-size:15px;font-weight:600;color:var(--t1);margin:28px 0 12px;display:flex;align-items:center;gap:8px}
+h3 .dot{width:8px;height:8px;background:var(--r);border-radius:50%;flex-shrink:0}
+
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card-sm{padding:14px}
+
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--t3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.field input,.field select{width:100%;padding:10px 12px;border:1.5px solid var(--bdr);border-radius:8px;font-size:14px;font-family:inherit;transition:.2s}
+.field input:focus,.field select:focus{outline:none;border-color:var(--r);box-shadow:0 0 0 3px rgba(231,5,10,.08)}
+
+.speech{background:#fef9f0;border:1px solid #f0e0c0;border-radius:8px;padding:16px 18px;margin:12px 0;font-size:14px;line-height:1.8;color:var(--t1);position:relative;white-space:pre-line}
+.speech::before{content:'🎙️';position:absolute;top:-10px;left:12px;background:#fef9f0;padding:0 4px;font-size:13px}
+.speech b,.speech strong{color:var(--r)}
+
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:16px 0}
+.plan{background:var(--card);border:2px solid var(--bdr);border-radius:10px;padding:16px;cursor:pointer;transition:.2s;position:relative}
+.plan:hover{border-color:var(--r);box-shadow:0 4px 16px rgba(231,5,10,.1)}
+.plan.on{border-color:var(--r);background:rgba(231,5,10,.03)}
+.plan.on::after{content:'✓';position:absolute;top:10px;right:12px;background:var(--r);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.plan-name{font-weight:700;color:var(--r);font-size:13px}
+.plan-price{font-size:18px;font-weight:700;margin:4px 0}
+.plan-feat{font-size:11px;color:var(--t2);margin:2px 0}
+
+.obj{border:1px solid var(--bdr);border-radius:8px;margin:10px 0;overflow:hidden;background:var(--card)}
+.obj-head{padding:14px 16px;cursor:pointer;font-weight:600;font-size:13px;display:flex;justify-content:space-between;align-items:center;transition:.15s;color:var(--t1)}
+.obj-head:hover{background:rgba(231,5,10,.03)}
+.obj-body{display:none;padding:16px;border-top:1px solid var(--bdr);font-size:13px;line-height:1.7}
+.obj-body.open{display:block}
+.obj-scripts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+@media(max-width:700px){.obj-scripts{grid-template-columns:1fr}}
+.obj-script{background:#f8f8f8;border-radius:6px;padding:12px;font-size:12px;line-height:1.6}
+.obj-script-label{font-weight:700;color:var(--r);font-size:11px;margin-bottom:6px;text-transform:uppercase}
+
+.cierre{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:20px;margin:14px 0;box-shadow:var(--shadow)}
+.cierre-name{font-weight:700;font-size:15px;color:var(--r);margin-bottom:4px}
+.cierre-when{font-size:12px;color:var(--t3);margin-bottom:10px;font-style:italic}
+.cierre-psych{font-size:12px;color:var(--t2);margin-bottom:12px;padding:8px 12px;background:#f5f5f5;border-radius:6px}
+
+.contract-block{background:#f7f7f5;border:1px solid #e0ddd5;border-radius:8px;padding:16px 18px;margin:12px 0;font-size:13px;line-height:1.8;color:var(--t1)}
+.contract-block .hl{background:#fff3cd;padding:1px 4px;border-radius:2px;font-weight:600}
+
+.savings{background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:1px solid #c8e6c9;border-radius:10px;padding:20px;margin:16px 0}
+.savings-amount{font-size:28px;font-weight:700;color:var(--g)}
+.savings-label{font-size:12px;color:var(--t2)}
+
+.tip{background:#fff8e1;border-left:3px solid var(--y);padding:12px 14px;border-radius:0 6px 6px 0;margin:14px 0;font-size:12px;line-height:1.6}
+.tip b{color:#e65100}
+
+.avatars{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:16px 0}
+.avatar{background:var(--card);border:2px solid var(--bdr);border-radius:10px;padding:14px;cursor:pointer;transition:.2s;text-align:center}
+.avatar:hover{border-color:var(--r)}
+.avatar.on{border-color:var(--r);background:rgba(231,5,10,.03)}
+.avatar-emoji{font-size:30px;margin-bottom:4px}
+.avatar-name{font-weight:700;font-size:12px;color:var(--t1)}
+.avatar-desc{font-size:10px;color:var(--t2);margin-top:3px}
+
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<button class="burger" onclick="document.querySelector('.nav').classList.toggle('open')">☰</button>
+
+<div class="app">
+<nav class="nav" id="sidebar">
+    <div class="nav-header">
+        <img src="cxd.png" alt="CXD">
+        <h2>Asistente de Ventas</h2>
+        <span>Claro Migraciones</span>
+    </div>
+    <div class="nav-cat">Preparación</div>
+    <a href="#" data-step="0" class="on" onclick="goNav(0,event)"><span class="step-num">1</span>Inicio & Perfil</a>
+    <a href="#" data-step="1" onclick="goNav(1,event)"><span class="step-num">2</span>Planes</a>
+    <div class="nav-cat">Durante la Llamada</div>
+    <a href="#" data-step="2" onclick="goNav(2,event)"><span class="step-num">3</span>Pitch de Apertura</a>
+    <a href="#" data-step="3" onclick="goNav(3,event)"><span class="step-num">4</span>Presentar Oferta</a>
+    <a href="#" data-step="4" onclick="goNav(4,event)"><span class="step-num">5</span>Objeciones</a>
+    <a href="#" data-step="5" onclick="goNav(5,event)"><span class="step-num">6</span>Cierres</a>
+    <div class="nav-cat">Legal & Contrato</div>
+    <a href="#" data-step="6" onclick="goNav(6,event)"><span class="step-num">7</span>Habeas Data</a>
+    <a href="#" data-step="7" onclick="goNav(7,event)"><span class="step-num">8</span>Contrato Grabado</a>
+    <a href="#" data-step="8" onclick="goNav(8,event)"><span class="step-num">9</span>Cierre Final</a>
+</nav>
+
+<div class="main">
+    <div class="main-header">
+        <img src="cxd.png" alt="CXD">
+        <div class="main-header-text">
+            <h1>Asistente de Ventas · Claro Migraciones</h1>
+            <span>Conexiones Digitales</span>
+        </div>
+    </div>
+    
+    <div class="main-body">
+
+<!-- 1. INICIO -->
+<div class="sec on" id="s0">
+    <div class="sec-title">¿A quién estás llamando?</div>
+    <p class="subtitle">Configura el perfil y toda la herramienta se adapta automáticamente.</p>
+    <div class="card">
+        <div class="field">
+            <label>Nombre del cliente</label>
+            <input type="text" id="cName" placeholder="Ej: Doña Carmen, Don Luis..." oninput="sync()">
+        </div>
+    </div>
+    <h3><span class="dot"></span>¿Qué perfil tiene?</h3>
+    <div class="avatars" id="avatarGrid"></div>
+    <div id="avatarDetail" class="hidden">
+        <div class="card" id="avatarCard"></div>
+    </div>
+</div>
+
+<!-- 2. PLANES -->
+<div class="sec" id="s1">
+    <div class="sec-title">Escoge el plan ideal</div>
+    <p class="subtitle" id="planSub">Selecciona un plan y todo se actualiza automáticamente.</p>
+    <div class="plans" id="planGrid"></div>
+    <div class="tip"><b>Todos incluyen:</b> Minutos y mensajes ilimitados · WhatsApp, Facebook y X sin consumir datos · 1 año Claro Video y Claro Música · 100GB Claro Drive · Claro Club.</div>
+</div>
+
+<!-- 3. PITCH -->
+<div class="sec" id="s2">
+    <div class="sec-title">Pitch de Apertura</div>
+    <p class="subtitle">Lee esto al iniciar la llamada. Está personalizado.</p>
+    <div class="speech" id="pitchScript"></div>
+    <h3><span class="dot"></span>Preguntas de sondeo</h3>
+    <div id="sondeoScripts"></div>
+    <div class="tip"><b>Transición a la oferta:</b> "Precisamente por eso lo estamos contactando, porque podemos ofrecerle un plan donde tenga más beneficios y control de su consumo."</div>
+</div>
+
+<!-- 4. OFERTA -->
+<div class="sec" id="s3">
+    <div class="sec-title">Presentar la Oferta</div>
+    <p class="subtitle">Script personalizado con el plan y perfil seleccionado.</p>
+    <div class="speech" id="ofertaScript"></div>
+    <div id="savingsBox" class="hidden"><div class="savings" id="savingsContent"></div></div>
+    <h3><span class="dot"></span>Beneficios que conectan con este cliente</h3>
+    <div id="benefitsP"></div>
+    <div class="tip"><b>Fórmula ganadora:</b> Pain del cliente → Comparación con números → Beneficio emocional → Cierre directo.</div>
+</div>
+
+<!-- 5. OBJECIONES -->
+<div class="sec" id="s4">
+    <div class="sec-title">Manejo de Objeciones</div>
+    <p class="subtitle">Cada objeción tiene 2 scripts listos. Solo lee el que mejor aplique.</p>
+    <h3><span class="dot"></span>Económicas</h3><div id="objEcon"></div>
+    <h3><span class="dot"></span>Confianza y Permanencia</h3><div id="objConf"></div>
+    <h3><span class="dot"></span>Producto y Servicio</h3><div id="objProd"></div>
+    <h3><span class="dot"></span>Personales</h3><div id="objPers"></div>
+    <h3><span class="dot"></span>Tiempo y Proceso</h3><div id="objTime"></div>
+</div>
+
+<!-- 6. CIERRES -->
+<div class="sec" id="s5">
+    <div class="sec-title">Técnicas de Cierre</div>
+    <p class="subtitle">Elige según el perfil. Los scripts están adaptados al plan seleccionado.</p>
+    <div id="cierresList"></div>
+    <h3><span class="dot"></span>Matriz Diagnóstica</h3>
+    <div class="card card-sm" style="overflow-x:auto">
+        <table style="width:100%;font-size:12px;border-collapse:collapse">
+            <tr style="background:#f5f5f5"><th style="padding:8px;text-align:left">Técnica</th><th style="padding:8px">Perfil</th><th style="padding:8px">Riesgo</th><th style="padding:8px">Gatillo</th></tr>
+            <tr><td style="padding:8px;font-weight:600;color:var(--r)">Directo</td><td style="padding:8px">Decidido</td><td style="padding:8px;color:var(--g)">Bajo</td><td style="padding:8px">"Vamos a activar..."</td></tr>
+            <tr><td style="padding:8px;font-weight:600;color:var(--r)">Asumido</td><td style="padding:8px">Analítico</td><td style="padding:8px;color:var(--y)">Medio</td><td style="padding:8px">"Procedemos con..."</td></tr>
+            <tr><td style="padding:8px;font-weight:600;color:var(--r)">Alternativo</td><td style="padding:8px">Indeciso</td><td style="padding:8px;color:var(--g)">Bajo</td><td style="padding:8px">"¿Opción A o B?"</td></tr>
+            <tr><td style="padding:8px;font-weight:600;color:var(--r)">Equivocación</td><td style="padding:8px">Dominante</td><td style="padding:8px;color:var(--r)">Alto</td><td style="padding:8px">"Le dejo sin..."</td></tr>
+            <tr><td style="padding:8px;font-weight:600;color:var(--r)">Escasez</td><td style="padding:8px">Dilatador</td><td style="padding:8px;color:var(--y)">Medio</td><td style="padding:8px">"Promoción liberada hoy..."</td></tr>
+        </table>
+    </div>
+</div>
+
+<!-- 7. HABEAS DATA -->
+<div class="sec" id="s6">
+    <div class="sec-title">Habeas Data</div>
+    <p class="subtitle">Lee TEXTUALMENTE. No cambies ni una palabra.</p>
+    <h3><span class="dot"></span>Autorización 1: Centrales de Riesgo (Ley 1266/2008)</h3>
+    <div class="contract-block">"Señor/Señora <span class="hl cN">___</span>, autoriza a CLARO para obtener de cualquier fuente toda la información relevante para conocer su desempeño como deudor, y que la misma sea utilizada en caso de reporte y actualización de información desde y ante entidades crediticias o centrales que Administran datos. <b>¿Acepta? SI o NO</b>"</div>
+    <h3><span class="dot"></span>Autorización 2: Datos Personales y Voz (Ley 1581/2012)</h3>
+    <div class="contract-block">"Señor/Señora <span class="hl cN">___</span>, autoriza a CLARO para realizar el tratamiento de sus datos personales, con fines de prestación del servicio, relación contractual comerciales, publicitarios y trasmisión de datos a terceros, en los términos detallados en la política de tratamiento disponible para consulta en www.claro.com.co, Así mismo autoriza a CLARO el tratamiento de su dato sensible de voz para prevenir fraudes en la adquisición de productos y servicios y validar su identidad en próximos contactos telefónicos. Usted puede consultar, actualizar y rectificar sus datos, solicitar o revocar esta autorización, conocer el uso dado a sus datos y contactar a la Superintendencia de Industria y Comercio. <b>¿Acepta? SI o NO</b>"</div>
+</div>
+
+<!-- 8. CONTRATO -->
+<div class="sec" id="s7">
+    <div class="sec-title">Contrato Grabado</div>
+    <p class="subtitle">Lee LITERAL. Los campos en amarillo se llenan solos.</p>
+    <div class="contract-block"><b>Asesor:</b> "Realizaremos la grabación del contrato para efectos de calidad y prestación de los servicios. El prestador de servicios es Comcel en Adelante Claro."</div>
+    <div class="contract-block"><b>Asesor:</b> "Señor/Señora <span class="hl cN">___</span>, informar los siguientes datos tal cual como aparecen en su documento de identidad:<br>• Nombre y Apellidos: <span class="hl cN">___</span><br>• Número de cédula: ________"</div>
+    <div class="contract-block"><b>Asesor:</b> "A continuación le solicitaré unos datos:<br>• Indíqueme su número de Teléfono de contacto (número a migrar)<br>• Indíqueme su dirección de correo electrónico<br>• Indíqueme su dirección física de correspondencia con ciudad y departamento<br><br>¿Autoriza a CLARO el envío de información por medio de mensajes de texto a su celular? <b>SI/NO</b>"</div>
+    <div class="contract-block"><b>Asesor:</b> "Señor/Señora <span class="hl cN">___</span>, Los productos que usted ha contratado con CLARO son los siguientes: Le activaremos un plan móvil en la línea (decir línea) <span class="hl cPlan">___</span>, plan cerrado, que incluye minutos ilimitados, mensajes de texto ilimitados, <span class="hl cData">___</span> de internet, Facebook, Twitter (x), y WhatsApp que podrá seguir usando una vez consumidos los datos.<br><br>1 año de claro video y claro música.<br><br>Su plan cuenta con promoción de: <span class="hl cDiscount">___</span>"</div>
+    <div class="contract-block"><b>Asesor:</b> "Los servicios tendrán un costo fijo de $<span class="hl cPrice">___</span> Incluido IVA. Claro podrá incrementar anualmente el valor de su plan hasta un máximo de 17.7% del precio vigente.<br><br>El servicio se activará a más tardar el <span class="hl cDate">___</span>.<br><br>La facturación será mensual anticipada la primera factura puede variar Proporcionalmente según la fecha de activación o instalación y los días trascurridos de la prestación de los servicios y por consumo de servicios adicionales.<br><br>Tenga presente que también serán incluidos en su factura los servicios de valor agregado activos actualmente en su línea prepago."</div>
+    <div class="contract-block"><b>Asesor:</b> "Señor/Señora <span class="hl cN">___</span>, ¿Está de acuerdo con estas condiciones y con el plan adquirido? <b>SI / NO</b>"</div>
+    <div class="contract-block"><b>Asesor:</b> "El plan es de uso exclusivo del suscriptor y no se permite su comercialización ni reventa, son causales para terminar el contrato, sin requerimiento previo.<br><br>Usted puede retractarse del contrato dentro de los (5) días hábiles siguientes a la entrega, siempre y cuando la prestación del servicio no haya empezado a ejecutarse.<br><br>CLARO remitirá por medios electrónicos (o a su dirección física) la factura, el contrato, las comunicaciones y las notificaciones de peticiones, quejas y recursos.<br><br>El contrato será remitido dentro de los siguientes 30 días hábiles a su correo electrónico (o dirección informada). Tendrá (15) días hábiles para presentar objeciones.<br><br>Este contrato se renovará por un plazo de 12 meses, igual al inicialmente pactado de manera sucesiva y automáticamente.<br><br>Usted puede terminar el contrato en cualquier momento sin penalidades. Para esto debe realizar una solicitud a través de nuestros medios de atención mínimo 3 días hábiles antes del corte de facturación.<br><br>La mora en el pago genera suspensión del servicio, causará intereses a la máxima tasa legal, perderá los beneficios promocionales y un costo de reconexión de $6.191 Pesos IVA incluido Subsistiendo la obligación de cancelar la deuda.<br><br>En nuestros canales digitales www.claro.com.co y/o descargando la App Mi Claro, usted puede conocer el detalle de su plan, consumos, fecha de facturación, fecha límite de pago, consultar y efectuar el pago de su factura de forma inmediata, requerir soporte técnico en la línea gratuita *611, o puede conocer los números telefónicos locales o Centros de Atención y Ventas (CAV) o puntos de pago Claro a nivel nacional."</div>
+    <div class="contract-block"><b>Asesor:</b> "Recuerde que mi nombre es [TU NOMBRE], Bienvenido a Claro. Estamos comprometidos con el mejor servicio. Gracias por confiar en Claro, Sr./Sra. <span class="hl cN">___</span>. Recuerda que puedes consultar tus servicios en www.claro.com.co, en la App Mi Claro o marcando *611. Con Claro lo puedes todo. ¡Fue un gusto atenderte!"</div>
+</div>
+
+<!-- 9. CIERRE FINAL -->
+<div class="sec" id="s8">
+    <div class="sec-title">🎉 Cierre Final</div>
+    <p class="subtitle">Resumen y despedida.</p>
+    <div class="speech" id="cierreScript"></div>
+    <div class="tip"><b>Próximos pasos:</b> SMS de bienvenida en 24h · Contrato por email en 30 días · App Mi Claro disponible ya · Soporte *611 gratuito 24/7.</div>
+</div>
+
+    </div>
+</div>
+</div>
+
+<div class="nav-footer show" id="pager">
+    <button id="btnPrev" onclick="navigate(-1)" disabled>← Atrás <span class="kbd">◄</span></button>
+    <span class="step-indicator" id="stepIndicator">1 / 9</span>
+    <button id="btnNext" class="primary" onclick="navigate(1)">Siguiente → <span class="kbd">►</span></button>
+</div>
+
+<script>
+const STEPS=['s0','s1','s2','s3','s4','s5','s6','s7','s8'];
+const LABELS=['Inicio & Perfil','Planes','Pitch de Apertura','Presentar Oferta','Objeciones','Cierres','Habeas Data','Contrato Grabado','Cierre Final'];
+let cur=0;
+
+const D={
+avatars:[
+{id:'profesional',emoji:'👔',name:'Profesional',desc:'Datos para trabajo · $60-120k/mes',pain:'Se queda sin datos en reuniones o cuando más lo necesita.',plans:['75','65'],sondeo:['¿Cada cuánto recarga? ¿Diario, semanal?','¿Cuánto invierte al mes en recargas más o menos?','¿Le ha pasado que se queda sin datos justo cuando más los necesita?'],benefits:['Nunca más se va a quedar sin conexión en una reunión importante','Puede compartir datos con su equipo o familia sin preocuparse','Tiene Amazon Prime incluido para ver contenido cuando descansa']},
+{id:'familia',emoji:'👨‍👩‍👧‍👦',name:'Familia',desc:'Comparte datos · $80-180k/mes',pain:'No controla el gasto. La familia consume sin límite.',plans:['99','75'],sondeo:['¿Cuántos en su familia usan datos del celular?','¿Controla cuánto gastan al mes entre todos?','¿Le ha pasado que entre todos se acaban los datos antes de tiempo?'],benefits:['Controla exactamente cuánto paga cada mes, sin sorpresas','Puede compartir datos con toda la familia de forma organizada','Netflix y Amazon Prime incluidos, entretenimiento para todos']},
+{id:'estudiante',emoji:'📚',name:'Estudiante / Joven',desc:'Videos y redes · $30-60k/mes',pain:'Se le agotan los datos viendo videos o en redes.',plans:['44','52','53'],sondeo:['¿Ve muchos videos en YouTube, TikTok o Instagram?','¿Cada cuánto se le acaban los datos?','¿Cuánto gasta más o menos al mes en recargas?'],benefits:['WhatsApp, Facebook y X son ilimitados, no le gastan datos','Suficientes gigas para ver videos todo el mes','Claro Video y Claro Música gratis por 1 año']},
+{id:'mayor',emoji:'👴',name:'Adulto Mayor',desc:'WhatsApp y llamadas · $20-40k/mes',pain:'No entiende la tecnología. Le da miedo complicarse.',plans:['44'],sondeo:['¿Usa más el celular para llamadas o WhatsApp?','¿Cuánto gasta al mes en recargas?','¿Le parece complicado el tema de los planes?'],benefits:['Usa su celular igualito que siempre, pero sin cargar saldo','Llamadas ilimitadas para hablar con la familia sin preocupaciones','Si necesita ayuda, marca *611 gratis y lo atienden al instante']},
+{id:'emprendedor',emoji:'💼',name:'Emprendedor',desc:'Alto consumo · $60-100k/mes',pain:'Necesita estar conectado siempre. El saldo se le va volando.',plans:['65','75'],sondeo:['¿Usa mucho los datos para su negocio?','¿Cuántas veces al mes se queda sin saldo?','¿Ha perdido un cliente o una oportunidad por quedarse sin datos?'],benefits:['Conexión garantizada todo el mes, ideal para su negocio','Si se le acaban los datos, sigue navegando (más lento, pero conectado)','Puede pagar con abonos parciales desde Nequi o Daviplata']},
+{id:'rural',emoji:'🌾',name:'Zona Rural',desc:'WhatsApp y llamadas · $20-50k/mes',pain:'Le queda difícil ir al pueblo a recargar.',plans:['44','52'],sondeo:['¿Le queda lejos el punto de recarga más cercano?','¿Usa el celular más para llamadas o WhatsApp?','¿Cuánto gasta al mes en recargas?'],benefits:['Puede pagar sin salir de casa por Nequi, Daviplata o abonos parciales','Llamadas ilimitadas para comunicarse con la familia','Roaming Nacional: se conecta a la antena más cercana automáticamente']}
+],
+planes:[
+{id:'99',name:'Conectados 99.9',price:99900,data:'Ilimitados',share:'70GB',apps:'Netflix + Amazon Prime',service:'Asistencia (Mascotas/Salud/Multi)',discount:'50% primer mes',discountText:'50% de descuento en tu primer mes'},
+{id:'75',name:'Conectados 75.9',price:75900,data:'130GB',share:'20GB',apps:'Amazon Prime',service:'Asistencia (Mascotas/Salud/Multi)',discount:'25% meses 1 y 2',discountText:'25% de descuento en los primeros 2 meses'},
+{id:'65',name:'Conectados 65.9',price:65900,data:'100GB',share:'15GB',apps:'Amazon Prime',service:'Asistencia (Mascotas/Salud/Multi)',discount:'50% primer mes',discountText:'50% de descuento en tu primer mes'},
+{id:'56',name:'Conectados 56.9',price:56900,data:'75GB',share:'15GB',apps:'Amazon Prime',service:'Cine o Lookout',discount:'25% meses 1 y 2',discountText:'25% de descuento en los primeros 2 meses'},
+{id:'53',name:'Conectados 53.9',price:53900,data:'65GB',share:'65GB',apps:'Ninguna',service:'Cine o Lookout',discount:'25% meses 1 y 2',discountText:'25% de descuento en los primeros 2 meses'},
+{id:'52',name:'Conectados 52.9',price:52900,data:'55GB',share:'55GB',apps:'Amazon Prime',service:'Cine o Lookout',discount:'50% primer mes',discountText:'50% de descuento en tu primer mes'},
+{id:'44',name:'Conectados 44.9',price:44900,data:'45GB',share:'45GB',apps:'Ninguna',service:'Ninguno',discount:'25% meses 1 y 2',discountText:'25% de descuento en los primeros 2 meses'}
+],
+objeciones:{
+econ:[
+{q:'"No tengo plata" / "Está muy caro"',s1:'Recuerde que la activación es totalmente gratis, y su primera factura la recibirá con el descuento aplicado. No lo dude más.',s2:'Imagínese que esté solo en casa y no pueda hacer una llamada porque se quedó sin saldo. Con el plan eso no le vuelve a pasar.',l1:'Valor/Ahorro',l2:'Cierre Imaginario'},
+{q:'"¿Qué pasa si me cuelgo un día en el pago?"',s1:'Usted cuenta con hasta 5 días hábiles después de su fecha límite para ponerse al día sin que le suspendan el servicio.',s2:'Puede pagar su plan con abonos parciales desde un valor mínimo, tal cual como hace sus recargas, para que no sienta el gasto a fin de mes.',l1:'Garantía',l2:'Flexibilidad'},
+{q:'"En otro operador me dan más por menos"',s1:'Aquí además de sus gigas, le entregamos plataformas de streaming gratis por un año. Haga la comparación completa.',s2:'Nosotros le damos la facilidad exclusiva de ir abonando poco a poco a su factura sin cortar el servicio.',l1:'Valor Agregado',l2:'Flexibilidad'}
+],
+conf:[
+{q:'"No quiero compromisos" / "Cláusula de permanencia"',s1:'Este beneficio no tiene cláusula de permanencia. Recuerde que va a tener un plan tan bueno y tan completo, con excelentes beneficios que sé que le irá muy bien.',s2:'Es un plan de fidelización por sus recargas. Lo activamos hoy y el día que ya no lo necesite, lo cancela por WhatsApp sin ir a oficinas.',l1:'Garantía',l2:'Fidelización'},
+{q:'"Los planes suben de precio" / "Tuve una mala experiencia"',s1:'Le garantizo que este es un plan cerrado. A diferencia de los planes antiguos, su tarifa básica es fija y no aumentará por consumo adicional.',s2:'Todo queda garantizado por contrato. Además, usted puede monitorear su consumo exacto desde la App Mi Claro para no tener sorpresas.',l1:'Plan Cerrado',l2:'Transparencia'},
+{q:'"Tengo miedo a que me reporten en Datacrédito"',s1:'Al contrario, pagar cumplidamente su plan le ayuda a generar una vida crediticia positiva con nosotros.',s2:'Ese buen comportamiento le permitirá más adelante sacar equipos o tecnología a cuotas directamente con Claro.',l1:'Vida Crediticia',l2:'Beneficio Futuro'}
+],
+prod:[
+{q:'"La señal de Claro falla por donde vivo"',s1:'Precisamente al pasar a plan le activamos la tecnología 5G satelital, que mejora la potencia de navegación y llamadas en su zona.',s2:'Contamos con Roaming Nacional. Su equipo se conectará automáticamente a la antena más cercana para que nunca esté incomunicado.',l1:'Tecnología',l2:'Cobertura'},
+{q:'"Los datos se me acaban muy rápido viendo videos"',s1:'Este plan tiene una capacidad muy alta en gigas diseñada para video. No se le acabarán antes de finalizar el mes.',s2:'Además, WhatsApp, Facebook y X son ilimitados y no consumen datos. Así sus gigas quedan totalmente libres para sus videos.',l1:'Capacidad',l2:'Apps Ilimitadas'},
+{q:'"No sé manejar internet" / "Solo uso WhatsApp"',s1:'Ese es el perfil ideal. Al tener redes y minutos ilimitados, no tiene que configurar nada. Usa su celular como siempre.',s2:'Simplemente usa su celular como siempre, pero con la tranquilidad de que nunca se quedará sin comunicación en una emergencia.',l1:'Sencillez',l2:'Tranquilidad'}
+],
+pers:[
+{q:'"La línea aparece a nombre de otra persona"',s1:'Hoy hacemos el cambio de titularidad totalmente gratis para que la línea quede a su nombre.',s2:'Esto le permite proteger su número y recuperarlo fácilmente si se le pierde o daña la SIM, algo que no podría hacer ahora.',l1:'Solución',l2:'Protección'},
+{q:'"Soy extranjero / Solo tengo permiso (PPT)"',s1:'Si un familiar o amigo cercano tiene cédula colombiana, podemos registrar el plan a nombre de esa persona de confianza.',s2:'Así usted no pierde la promoción y su conocido le ayuda a respaldar la línea legalmente ante el sistema.',l1:'Alternativa',l2:'Oportunidad'},
+{q:'"Vivo en una vereda y me queda lejos ir a pagar"',s1:'Puede pagar sin salir de su casa a través de aplicaciones digitales como Nequi o Daviplata usando solo su número celular.',s2:'También puede hacer abonos parciales en el corresponsal más cercano de su vereda, tal cual como hace hoy con las recargas.',l1:'Digital',l2:'Presencial'}
+],
+time:[
+{q:'"No tengo tiempo" / "Es muy demorado"',s1:'Le entiendo. Mi objetivo es hacerlo eficiente: el sistema me permite su solicitud en solo 3 minutos. Al hacerlo ahora, garantizamos su descuento de bienvenida.',s2:'Para su comodidad, lo hacemos de una vez en solo 3 minutos y así se ahorra la llamada más tarde. Solo confirmamos sus datos y listo.',l1:'Rapidez',l2:'Comodidad'},
+{q:'"Me da miedo dar mis datos" / "No confío en el PIN"',s1:'Recuerde que el código PIN único es una manera rápida y confiable para evitar la suplantación de identidad y evitar que otra persona tome el plan a nombre suyo.',s2:'Le envío un código PIN a su celular. Usted solo me lo dicta y así asegura que su línea quede a su nombre y con todos los beneficios hoy mismo.',l1:'Seguridad',l2:'Facilidad'},
+{q:'"Prefiero ir a una tienda física"',s1:'Entiendo, pero la tienda física implica esperas. Nuestra vía digital es más rápida: en 5 minutos su servicio queda legalizado.',s2:'Es mucho más rápido que ir a hacer una recarga física. Lo hacemos todo en línea y en pocos minutos queda legalizado con su descuento aplicado hoy mismo.',l1:'Rapidez',l2:'Conveniencia'}
+]}};
+
+let avatar=null,plan=null;
+
+function goNav(i,e){e&&e.preventDefault();goStep(i)}
+
+function goStep(i){
+    if(i<0||i>=STEPS.length)return;
+    document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+    document.getElementById(STEPS[i]).classList.add('on');
+    document.querySelectorAll('.nav a[data-step]').forEach(a=>{a.classList.remove('on');if(parseInt(a.dataset.step)===i)a.classList.add('on')});
+    cur=i;
+    document.getElementById('btnPrev').disabled=i===0;
+    document.getElementById('btnNext').disabled=i===STEPS.length-1;
+    document.getElementById('btnNext').textContent=i===STEPS.length-2?'Finalizar →':'Siguiente →';
+    document.getElementById('stepIndicator').textContent=`${i+1} / ${STEPS.length}`;
+    document.querySelector('.nav').classList.remove('open');
+    document.querySelector('.main-body').scrollTo(0,0);
+    window.scrollTo(0,0);
+}
+
+function navigate(dir){goStep(cur+dir)}
+
+document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')navigate(1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')navigate(-1);
+});
+
+function sync(){
+    const n=document.getElementById('cName').value||'___';
+    document.querySelectorAll('.cN').forEach(e=>e.textContent=n);
+    updateAll();
+}
+
+function pickAvatar(a,el){
+    avatar=a;
+    document.querySelectorAll('.avatar').forEach(e=>e.classList.remove('on'));
+    el.classList.add('on');
+    document.getElementById('avatarDetail').classList.remove('hidden');
+    document.getElementById('avatarCard').innerHTML=`<div style="font-size:14px"><b style="color:var(--r)">${a.emoji} ${a.name}</b></div><div style="font-size:13px;color:var(--t2);margin:8px 0"><b>Su dolor:</b> ${a.pain}</div><div style="font-size:13px;color:var(--t2)"><b>Planes recomendados:</b> ${a.plans.map(p=>'$'+D.planes.find(x=>x.id===p).price.toLocaleString()).join(', ')}</div>`;
+    document.getElementById('planSub').textContent=`Recomendados para ${a.name}: ${a.plans.map(p=>D.planes.find(x=>x.id===p).name).join(', ')}`;
+    updateAll();
+}
+
+function pickPlan(p,el){
+    plan=p;
+    document.querySelectorAll('.plan').forEach(e=>e.classList.remove('on'));
+    el.classList.add('on');
+    document.querySelectorAll('.cPlan').forEach(e=>e.textContent=p.name);
+    document.querySelectorAll('.cData').forEach(e=>e.textContent=p.data);
+    document.querySelectorAll('.cPrice').forEach(e=>e.textContent=p.price.toLocaleString());
+    document.querySelectorAll('.cDiscount').forEach(e=>e.textContent=p.discountText);
+    const d=new Date();d.setDate(d.getDate()+2);
+    document.querySelectorAll('.cDate').forEach(e=>e.textContent=d.toLocaleDateString('es-CO'));
+    updateAll();
+}
+
+function updateAll(){
+    const n=document.getElementById('cName').value||'[Nombre]';
+    const av=avatar||D.avatars[0];
+    const pl=plan||D.planes[6];
+    document.getElementById('pitchScript').innerHTML=`"Hola, muy buenas tardes. ¿Hablo con <b>${n}</b>?\n\nMi nombre es [tu nombre], soy creador de experiencias de Claro Móvil. Espero que se encuentre muy bien.\n\nEl motivo de mi llamada es presentarle una opción que le permite <b>mejorar su servicio móvil y optimizar su consumo mensual</b> con beneficios exclusivos.\n\n¿Me regala un minutico para contarle?"`;
+    let sq='';av.sondeo.forEach(q=>{sq+=`<div class="speech" style="margin:8px 0">"${q}"</div>`});
+    sq+=`<div class="speech" style="margin:8px 0;border-color:var(--r)"><b>Transición:</b> "Precisamente por eso lo estamos contactando. Para ofrecerle la mejor alternativa. Claro tiene para usted un plan pospago ideal."</div>`;
+    document.getElementById('sondeoScripts').innerHTML=sq;
+    document.getElementById('ofertaScript').innerHTML=`"<b>${n}</b>, mire lo que tengo para usted. Un plan <b>${pl.name}</b> que incluye:\n\n✅ <b>${pl.data}</b> de datos para navegar todo el mes sin preocuparse\n✅ <b>Minutos y mensajes ilimitados</b> a cualquier operador\n✅ <b>WhatsApp, Facebook y X</b> que no le consumen datos\n✅ <b>${pl.apps!=='Ninguna'?pl.apps+' incluido':'Claro Video y Claro Música'}</b> gratis por 1 año\n${pl.service!=='Ninguno'?'✅ <b>'+pl.service+'</b> incluida\n':''}✅ Y lo mejor: <b>${pl.discountText}</b>\n\nTodo por solo <b>$${pl.price.toLocaleString()}</b> al mes. Seguramente es parecido o menos de lo que invierte en recargas."`;
+    const spend=av.id==='familia'?180000:av.id==='profesional'||av.id==='emprendedor'?120000:av.id==='estudiante'?60000:40000;
+    const save=spend-pl.price;
+    if(save>0){document.getElementById('savingsBox').classList.remove('hidden');document.getElementById('savingsContent').innerHTML=`<div class="savings-label">Si ${n} gasta aprox. $${spend.toLocaleString()}/mes en recargas</div><div class="savings-amount">Ahorra $${save.toLocaleString()}/mes</div><div class="savings-label" style="margin-top:4px">= <b>$${(save*12).toLocaleString()}/año</b> que se queda en su bolsillo</div>`}
+    let bh='';av.benefits.forEach(b=>{bh+=`<div class="card card-sm" style="margin:8px 0"><span style="color:var(--r);font-weight:700">✨</span> ${b}</div>`});
+    document.getElementById('benefitsP').innerHTML=bh;
+    const cierres=[
+        {name:'Cierre Directo',when:'Cliente decidido, práctico.',psych:'Transparencia total. Se asume que entendió el valor.',script:`"Perfecto <b>${n}</b>, vamos a realizar la activación de su plan de <b>${pl.data}</b> por <b>$${pl.price.toLocaleString()}</b> para que empiece a disfrutar de los beneficios hoy mismo. Solo voy a validar unos datos en sistema y en pocos minutos queda listo."`},
+        {name:'Cierre Asumido',when:'Cliente analítico, dice "ajá" pero no dice "sí".',psych:'Se actúa como si ya dijo que sí. La pregunta de cierre es sobre un dato operativo, no sobre la venta.',script:`"Entonces <b>${n}</b>, procedemos a activar su plan ${pl.name} para que desde este mismo mes tenga sus <b>${pl.data}</b> y llamadas ilimitadas y no tenga que volver a preocuparse por recargar. ¿Me confirma su número de cédula para el registro?"`},
+        {name:'Cierre Alternativo',when:'Cliente indeciso, necesita sentir que tiene el control.',psych:'Al ofrecer dos opciones, el cerebro deja de pensar en "comprar o no" y pasa a evaluar "cuál de las dos".',script:`"Señor(a) <b>${n}</b>, viendo su consumo, tengo dos opciones perfectas para usted. Podemos activar el plan de <b>$${pl.price.toLocaleString()}</b> con <b>${pl.data}</b>, o si prefiere, el siguiente nivel que le sube los datos y le incluye más beneficios. ¿Cuál de los dos se ajusta mejor a lo que busca?"`},
+        {name:'Cierre por Equivocación',when:'Cliente dominante, escéptico. Interesado en un beneficio específico.',psych:'Error intencional. Al corregirte, el cliente defiende el plan y se cierra a sí mismo.',script:`"Perfecto, entonces voy a registrar en el sistema que le dejamos el plan básico de <b>$${pl.price.toLocaleString()}</b> sin la suscripción de ${pl.apps!=='Ninguna'?pl.apps:'streaming'}, ¿verdad?"\n\n<i style="color:var(--t3)">(El cliente corrige: "No, yo quiero el que sí trae ${pl.apps!=='Ninguna'?pl.apps:'los beneficios'}")</i>`},
+        {name:'Cierre por Escasez',when:'Cliente dilatador, dice "lo voy a pensar".',psych:'Urgencia y aversión a la pérdida. El ser humano valora más lo que está a punto de perder.',script:`"Claro, es válido pensarlo. Lo importante es que esta oferta del plan de <b>${pl.data}</b> por <b>$${pl.price.toLocaleString()}</b> con <b>${pl.discountText}</b> es una promoción liberada en sistema específicamente para su línea hoy. Si cerramos la llamada sin confirmarlo, el sistema puede reasignar el cupo y perdería el beneficio. Hagamos la validación de una vez."`}
+    ];
+    let ch='';cierres.forEach(c=>{ch+=`<div class="cierre"><div class="cierre-name">${c.name}</div><div class="cierre-when">${c.when}</div><div class="cierre-psych">${c.psych}</div><div class="speech">${c.script}</div></div>`});
+    document.getElementById('cierresList').innerHTML=ch;
+    document.getElementById('cierreScript').innerHTML=`"Perfecto, para resumir:\n\nUsted queda con <b>${pl.name}</b>, con <b>${pl.data}</b> de datos, minutos ilimitados, redes sociales sin consumo de datos${pl.apps!=='Ninguna'?', <b>'+pl.apps+'</b> incluido':''}, pagando <b>$${pl.price.toLocaleString()}</b> al mes, y desde hoy disfruta de todos los beneficios Claro.\n\n¡Felicitaciones por su decisión y bienvenido(a) a Claro! 🎉"`;
+}
+
+function renderObjs(arr,id){
+    let h='';arr.forEach(o=>{h+=`<div class="obj"><div class="obj-head" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('span').textContent=this.nextElementSibling.classList.contains('open')?'−':'+'"><div>${o.q}</div><span>+</span></div><div class="obj-body"><div class="obj-scripts"><div class="obj-script"><div class="obj-script-label">${o.l1}</div>${o.s1}</div><div class="obj-script"><div class="obj-script-label">${o.l2}</div>${o.s2}</div></div></div></div>`});
+    document.getElementById(id).innerHTML=h;
+}
+
+function init(){
+    let ah='';D.avatars.forEach(a=>{ah+=`<div class="avatar" onclick="pickAvatar(D.avatars.find(x=>x.id==='${a.id}'),this)"><div class="avatar-emoji">${a.emoji}</div><div class="avatar-name">${a.name}</div><div class="avatar-desc">${a.desc}</div></div>`});
+    document.getElementById('avatarGrid').innerHTML=ah;
+    let ph='';D.planes.forEach(p=>{ph+=`<div class="plan" onclick="pickPlan(D.planes.find(x=>x.id==='${p.id}'),this)"><div class="plan-name">${p.name}</div><div class="plan-price">$${p.price.toLocaleString()}</div><div class="plan-feat">📊 ${p.data} datos</div><div class="plan-feat">🔗 ${p.share} compartir</div>${p.apps!=='Ninguna'?'<div class="plan-feat">🎬 '+p.apps+'</div>':''}<div class="plan-feat" style="color:var(--g);font-weight:600">🏷️ ${p.discount}</div></div>`});
+    document.getElementById('planGrid').innerHTML=ph;
+    renderObjs(D.objeciones.econ,'objEcon');renderObjs(D.objeciones.conf,'objConf');renderObjs(D.objeciones.prod,'objProd');renderObjs(D.objeciones.pers,'objPers');renderObjs(D.objeciones.time,'objTime');
+    updateAll();
+}
+init();
+</script>
+</body>
+</html>
